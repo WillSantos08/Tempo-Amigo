@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         TextView textViewAlertas = findViewById(R.id.textViewAlertas);
 
         HttpClient.get(URL, ClimaDTO.class,
-                clima -> runOnUiThread(() -> {
+                clima -> {
                     textViewTemp   .setText(clima.current.temperature2m      + "°C");
                     textViewUmidade.setText(clima.current.relativeHumidity2m + "%");
                     textViewVento  .setText(clima.current.windSpeed10m       + " km/h");
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
                     List<String> alertas = new AlertaClimaticoService(clima).verificarAlertas();
                     textViewAlertas.setText(String.join("\n", alertas));
-                }),
+                },
                 erro -> Log.e("CLIMA", "Erro: " + erro)
         );
     }
