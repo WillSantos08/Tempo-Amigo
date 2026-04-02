@@ -10,18 +10,25 @@ import androidx.core.content.ContextCompat;
 
 public class PermissaoHelper {
 
-    public static final String PERMISSAO = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String[] PERMISSOES = {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.POST_NOTIFICATIONS
+    };
 
     private final AppCompatActivity activity;
-    private final ActivityResultLauncher<String> launcher;
+    private final ActivityResultLauncher<String[]> launcher;
     private Runnable onConcedida;
 
     public PermissaoHelper(AppCompatActivity activity) {
         this.activity = activity;
         this.launcher = activity.registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(),
-                concedida -> {
-                    if (concedida && onConcedida != null) {
+                new ActivityResultContracts.RequestMultiplePermissions(),
+                resultado -> {
+                    boolean todasConcedidas = resultado.values()
+                            .stream()
+                            .allMatch(Boolean::booleanValue);
+
+                    if (todasConcedidas && onConcedida != null) {
                         onConcedida.run();
                     }
                 }
@@ -31,15 +38,20 @@ public class PermissaoHelper {
     public void solicitar(Runnable onConcedida) {
         this.onConcedida = onConcedida;
 
-        if (temPermissao()) {
+        if (temTodasPermissoes()) {
             onConcedida.run();
         } else {
-            launcher.launch(PERMISSAO);
+            launcher.launch(PERMISSOES);
         }
     }
 
-    public boolean temPermissao() {
-        return ContextCompat.checkSelfPermission(activity, PERMISSAO)
-                == PackageManager.PERMISSION_GRANTED;
+    public boolean temTodasPermissoes() {
+        for (String permissao : PERMISSOES) {
+            if (ContextCompat.checkSelfPermission(activity, permissao)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
     }
 }

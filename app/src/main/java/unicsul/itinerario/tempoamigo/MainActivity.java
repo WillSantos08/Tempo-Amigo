@@ -11,16 +11,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import unicsul.itinerario.tempoamigo.location.LocalizacaoClient;
 import unicsul.itinerario.tempoamigo.location.PermissaoHelper;
 import unicsul.itinerario.tempoamigo.network.clima.ClimaApiClient;
 import unicsul.itinerario.tempoamigo.repository.ClimaRepository;
 import unicsul.itinerario.tempoamigo.service.AlertaClimaticoService;
+import unicsul.itinerario.tempoamigo.service.NotificacaoService;
+import unicsul.itinerario.tempoamigo.worker.ClimaWorker;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String WORKER_TAG = "clima_worker";
 
     private ClimaRepository climaRepository;
     private PermissaoHelper permissao;
@@ -42,7 +51,23 @@ public class MainActivity extends AppCompatActivity {
         );
 
         permissao = new PermissaoHelper(this);
-        permissao.solicitar(this::atualizarClima);
+        permissao.solicitar(() -> {
+            atualizarClima();
+            agendarWorker();
+        });
+    }
+
+    private void agendarWorker() {
+        PeriodicWorkRequest trabalho = new PeriodicWorkRequest.Builder(
+                ClimaWorker.class,
+                15, TimeUnit.MINUTES
+        ).build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                WORKER_TAG,
+                ExistingPeriodicWorkPolicy.KEEP,
+                trabalho
+        );
     }
 
     private void atualizarClima() {
@@ -56,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
         climaRepository.buscarClimaPorLocalizacao()
                 .thenAcceptAsync(clima -> {
                     textViewTemp.setText(clima.current.temperature2m + "°C");
-                    textViewUmidade.setText(clima.current.relativeHumidity2m + "%");
-                    textViewVento.setText(clima.current.windSpeed10m + " km/h");
-                    textViewChuva.setText(clima.current.precipitation + " mm");
+                    textViewUmidade.setText("Umidade: " + clima.current.relativeHumidity2m + "%");
+                    textViewVento.setText("Vento: " + clima.current.windSpeed10m + " km/h");
+                    textViewChuva.setText("Chuva: " + clima.current.precipitation + " mm");
 
                     List<String> alertas = new AlertaClimaticoService(clima).verificarAlertas();
                     textViewAlertas.setText(String.join("\n", alertas));
@@ -67,5 +92,10 @@ public class MainActivity extends AppCompatActivity {
                     Log.e("CLIMA", erro.getMessage());
                     return null;
                 });
+
+        findViewById(R.id.buttonTestar).setOnClickListener(v -> {
+            OneTimeWorkRequest teste = new OneTimeWorkRequest.Builder(ClimaWorker.class).build();
+            WorkManager.getInstance(this).enqueue(teste);
+        });
     }
 }
