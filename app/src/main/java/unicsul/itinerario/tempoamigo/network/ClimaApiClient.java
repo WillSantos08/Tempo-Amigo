@@ -8,7 +8,6 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
-import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 import unicsul.itinerario.tempoamigo.dto.ClimaDTO;
 
@@ -22,6 +21,10 @@ public class ClimaApiClient {
         this.climaApi = climaApi;
     }
 
+    public static ClimaApiClient criar() {
+        return criar(HttpClient.getInstance());
+    }
+
     public static ClimaApiClient criar(OkHttpClient httpClient) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -33,20 +36,14 @@ public class ClimaApiClient {
     }
 
     public CompletableFuture<ClimaDTO> buscarClima(double latitude, double longitude) {
-        Map<String, String> params = new LinkedHashMap<>();
-        params.put("latitude",  String.valueOf(latitude));
-        params.put("longitude", String.valueOf(longitude));
-        params.putAll(parametrosPadrao());
-        return climaApi.buscarClima(params);
-    }
-
-    private static Map<String, String> parametrosPadrao() {
-        Map<String, String> params = new LinkedHashMap<>();
-        params.put("current", "temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,weather_code");
-        params.put("hourly", "temperature_2m,precipitation_probability");
-        params.put("daily", "temperature_2m_max,temperature_2m_min,precipitation_sum");
-        params.put("timezone", "America/Sao_Paulo");
-        return params;
+        Map<String, String> parametros = new LinkedHashMap<>();
+        parametros.put("latitude", String.valueOf(latitude));
+        parametros.put("longitude", String.valueOf(longitude));
+        parametros.put("current", "temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,weather_code");
+        parametros.put("hourly", "temperature_2m,precipitation_probability");
+        parametros.put("daily", "temperature_2m_max,temperature_2m_min,precipitation_sum");
+        parametros.put("timezone", "America/Sao_Paulo");
+        return climaApi.buscarClima(parametros);
     }
 
     private interface ClimaApi {

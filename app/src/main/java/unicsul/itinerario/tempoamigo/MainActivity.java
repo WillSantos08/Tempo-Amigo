@@ -15,7 +15,6 @@ import androidx.core.view.WindowInsetsCompat;
 import java.util.List;
 
 import unicsul.itinerario.tempoamigo.network.ClimaApiClient;
-import unicsul.itinerario.tempoamigo.network.HttpClient;
 import unicsul.itinerario.tempoamigo.service.AlertaClimaticoService;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         TextView textViewChuva = findViewById(R.id.textViewChuva);
         TextView textViewAlertas = findViewById(R.id.textViewAlertas);
 
-        ClimaApiClient api = ClimaApiClient.criar(HttpClient.getInstance());
+        ClimaApiClient api = ClimaApiClient.criar();
 
         api.buscarClima(
                         -23.65572127630479,
