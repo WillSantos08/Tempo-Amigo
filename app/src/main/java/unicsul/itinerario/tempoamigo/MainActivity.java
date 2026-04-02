@@ -2,15 +2,12 @@ package unicsul.itinerario.tempoamigo;
 
 import static unicsul.itinerario.tempoamigo.network.HttpClient.mainThread;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -18,16 +15,15 @@ import androidx.core.view.WindowInsetsCompat;
 import java.util.List;
 
 import unicsul.itinerario.tempoamigo.location.LocalizacaoClient;
+import unicsul.itinerario.tempoamigo.location.PermissaoHelper;
 import unicsul.itinerario.tempoamigo.network.clima.ClimaApiClient;
+import unicsul.itinerario.tempoamigo.repository.ClimaRepository;
 import unicsul.itinerario.tempoamigo.service.AlertaClimaticoService;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int PERMISSAO_LOCALIZACAO = 1;
-
-    private ClimaApiClient api;
-    private LocalizacaoClient localizacao;
-    private TextView textViewTemp, textViewUmidade, textViewVento, textViewChuva, textViewAlertas;
+    private ClimaRepository climaRepository;
+    private PermissaoHelper permissao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,48 +36,24 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        textViewTemp     = findViewById(R.id.textViewTemp);
-        textViewUmidade  = findViewById(R.id.textViewUmidade);
-        textViewVento    = findViewById(R.id.textViewVento);
-        textViewChuva    = findViewById(R.id.textViewChuva);
-        textViewAlertas  = findViewById(R.id.textViewAlertas);
+        climaRepository = new ClimaRepository(
+                new LocalizacaoClient(getApplicationContext()),
+                ClimaApiClient.criar()
+        );
 
-        api         = ClimaApiClient.criar();
-        localizacao = new LocalizacaoClient(getApplicationContext());
-
-        solicitarPermissaoEBuscarClima();
+        permissao = new PermissaoHelper(this);
+        permissao.solicitar(this::atualizarClima);
     }
 
-    private void solicitarPermissaoEBuscarClima() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            buscarClima(); // já tem permissão
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSAO_LOCALIZACAO);
-        }
-    }
+    private void atualizarClima() {
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        TextView textViewTemp    = findViewById(R.id.textViewTemp);
+        TextView textViewUmidade = findViewById(R.id.textViewUmidade);
+        TextView textViewVento   = findViewById(R.id.textViewVento);
+        TextView textViewChuva   = findViewById(R.id.textViewChuva);
+        TextView textViewAlertas = findViewById(R.id.textViewAlertas);
 
-        if (requestCode == PERMISSAO_LOCALIZACAO) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                buscarClima(); // usuário concedeu
-            } else {
-                Log.e("PERMISSAO", "Localização negada pelo usuário");
-            }
-        }
-    }
-
-    private void buscarClima() {
-        localizacao.obterLocalizacao()
-                .thenCompose(location -> api.buscarClima(
-                        location.getLatitude(),
-                        location.getLongitude()
-                ))
+        climaRepository.buscarClimaPorLocalizacao()
                 .thenAcceptAsync(clima -> {
                     textViewTemp.setText(clima.current.temperature2m + "°C");
                     textViewUmidade.setText(clima.current.relativeHumidity2m + "%");
