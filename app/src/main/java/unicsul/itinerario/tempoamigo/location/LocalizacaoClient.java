@@ -17,6 +17,9 @@ import java.util.concurrent.CompletableFuture;
 
 public class LocalizacaoClient {
 
+    private static final long UM_HORA_EM_MS   = 60 * 60 * 1000;
+    private static final long TRES_HORAS_EM_MS = 3 * 60 * 60 * 1000;
+
     private final FusedLocationProviderClient fusedClient;
     private final Context context;
 
@@ -31,8 +34,15 @@ public class LocalizacaoClient {
             future.completeExceptionally(new SecurityException("Permissão de localização não concedida"));
             return future;
         }
-
         return buscarLocalizacao();
+    }
+    public CompletableFuture<Location> obterLocalizacaoBackground() {
+        if (!temPermissao()) {
+            CompletableFuture<Location> future = new CompletableFuture<>();
+            future.completeExceptionally(new SecurityException("Permissão de localização não concedida"));
+            return future;
+        }
+        return buscarLocalizacaoBackground();
     }
 
     private boolean temPermissao() {
@@ -46,7 +56,7 @@ public class LocalizacaoClient {
 
         fusedClient.getLastLocation()
                 .addOnSuccessListener(location -> {
-                    if (location != null && !estaDesatualizada(location)) {
+                    if (location != null && !estaDesatualizada(location, UM_HORA_EM_MS)) {
                         future.complete(location);
                     } else {
                         solicitarLocalizacaoAtual(future);
@@ -57,9 +67,25 @@ public class LocalizacaoClient {
         return future;
     }
 
-    private boolean estaDesatualizada(Location location) {
-        long umHoraEmMs = 60 * 60 * 1000;
-        return System.currentTimeMillis() - location.getTime() > umHoraEmMs;
+    @SuppressLint("MissingPermission")
+    private CompletableFuture<Location> buscarLocalizacaoBackground() {
+        CompletableFuture<Location> future = new CompletableFuture<>();
+
+        fusedClient.getLastLocation()
+                .addOnSuccessListener(location -> {
+                    if (location != null && !estaDesatualizada(location, TRES_HORAS_EM_MS)) {
+                        future.complete(location);
+                    } else {
+                        solicitarLocalizacaoBackground(future);
+                    }
+                })
+                .addOnFailureListener(e -> solicitarLocalizacaoBackground(future));
+
+        return future;
+    }
+
+    private boolean estaDesatualizada(Location location, long limiteMs) {
+        return System.currentTimeMillis() - location.getTime() > limiteMs;
     }
 
     @SuppressLint("MissingPermission")
@@ -75,6 +101,25 @@ public class LocalizacaoClient {
                         future.complete(location);
                     } else {
                         future.completeExceptionally(new Exception("Localização indisponível"));
+                    }
+                })
+                .addOnFailureListener(future::completeExceptionally);
+    }
+
+    @SuppressLint("MissingPermission")
+    private void solicitarLocalizacaoBackground(CompletableFuture<Location> future) {
+        CurrentLocationRequest request = new CurrentLocationRequest.Builder()
+                .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
+                .setMaxUpdateAgeMillis(TRES_HORAS_EM_MS)
+                .setDurationMillis(10_000)
+                .build();
+
+        fusedClient.getCurrentLocation(request, null)
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        future.complete(location);
+                    } else {
+                        future.completeExceptionally(new Exception("Localização indisponível em background"));
                     }
                 })
                 .addOnFailureListener(future::completeExceptionally);

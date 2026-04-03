@@ -23,4 +23,12 @@ public class ClimaRepository {
                         location.getLongitude()
                 ));
     }
+
+    public CompletableFuture<ClimaDTO> buscarClimaPorLocalizacaoBackground() {
+        return localizacaoClient.obterLocalizacaoBackground()
+                .thenCompose(location -> climaApiClient.buscarClima(
+                        location.getLatitude(),
+                        location.getLongitude()
+                ));
+    }
 }

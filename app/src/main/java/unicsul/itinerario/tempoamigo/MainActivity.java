@@ -28,8 +28,6 @@ import unicsul.itinerario.tempoamigo.worker.ClimaWorker;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String WORKER_TAG = "clima_worker";
-
     private ClimaRepository climaRepository;
     private PermissaoHelper permissao;
 
@@ -49,6 +47,12 @@ public class MainActivity extends AppCompatActivity {
                 ClimaApiClient.criar()
         );
 
+        findViewById(R.id.buttonTestar).setOnClickListener(v -> {
+            OneTimeWorkRequest teste = new OneTimeWorkRequest.Builder(ClimaWorker.class).build();
+            WorkManager.getInstance(this).enqueue(teste);
+            Log.d("MainActivity", "Worker de teste enfileirado");
+        });
+
         permissao = new PermissaoHelper(this);
         permissao.solicitar(() -> {
             atualizarClima();
@@ -63,14 +67,13 @@ public class MainActivity extends AppCompatActivity {
         ).build();
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-                WORKER_TAG,
-                ExistingPeriodicWorkPolicy.KEEP,
+                ClimaWorker.TAG,
+                ExistingPeriodicWorkPolicy.UPDATE,
                 trabalho
         );
     }
 
     private void atualizarClima() {
-
         TextView textViewTemp    = findViewById(R.id.textViewTemp);
         TextView textViewUmidade = findViewById(R.id.textViewUmidade);
         TextView textViewVento   = findViewById(R.id.textViewVento);
@@ -91,10 +94,5 @@ public class MainActivity extends AppCompatActivity {
                     Log.e("CLIMA", erro.getMessage());
                     return null;
                 });
-
-        findViewById(R.id.buttonTestar).setOnClickListener(v -> {
-            OneTimeWorkRequest teste = new OneTimeWorkRequest.Builder(ClimaWorker.class).build();
-            WorkManager.getInstance(this).enqueue(teste);
-        });
     }
 }
