@@ -41,7 +41,7 @@ public class ClimaApiClient {
         parametros.put("latitude", String.valueOf(latitude));
         parametros.put("longitude", String.valueOf(longitude));
         parametros.put("current", "temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,weather_code");
-        //parametros.put("hourly", "temperature_2m,precipitation_probability");
+        parametros.put("hourly", "temperature_2m,precipitation_probability");
         parametros.put("daily", "temperature_2m_max,temperature_2m_min,precipitation_sum");
         parametros.put("timezone", "America/Sao_Paulo");
         return climaApi.buscarClima(parametros);
