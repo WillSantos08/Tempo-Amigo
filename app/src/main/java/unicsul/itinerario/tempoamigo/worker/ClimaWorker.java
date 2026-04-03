@@ -11,9 +11,9 @@ import androidx.work.WorkerParameters;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import unicsul.itinerario.tempoamigo.dto.ClimaDTO;
+import unicsul.itinerario.tempoamigo.factory.ContatoEmergenciaFactory;
 import unicsul.itinerario.tempoamigo.location.LocalizacaoClient;
 import unicsul.itinerario.tempoamigo.model.Alerta;
 import unicsul.itinerario.tempoamigo.network.clima.ClimaApiClient;
@@ -53,12 +53,12 @@ public class ClimaWorker extends Worker {
             }
 
             if (!alertas.isEmpty()) {
-                List<String> alertasTexto = alertas.stream()
-                        .map(Alerta::formatarParaNotificacao)
-                        .collect(Collectors.toList());
-
                 Log.d(TAG, "Disparando notificação...");
-                new NotificacaoService(getApplicationContext()).notificarAlertas(alertasTexto);
+                new ContatoEmergenciaFactory(getApplicationContext())
+                        .buscar()
+                        .thenAccept(contato ->
+                                new NotificacaoService(getApplicationContext()).notificarAlertas(alertas, contato)
+                        );
                 Log.d(TAG, "Notificação disparada com sucesso!");
             } else {
                 Log.d(TAG, "Sem alertas, nenhuma notificação enviada");
