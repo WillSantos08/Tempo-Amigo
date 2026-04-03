@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                             ? "Nenhuma condição extrema detectada."
                             : alertas.stream()
                             .map(Alerta::formatarParaTela)
-                            .collect(Collectors.joining("\n"));
+                            .collect(Collectors.joining("\n\n"));
 
                     textViewAlertas.setText(textoAlertas);
                 }, mainThread::post)

@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import unicsul.itinerario.tempoamigo.R;
 import unicsul.itinerario.tempoamigo.model.Alerta;
 import unicsul.itinerario.tempoamigo.model.ContatoEmergencia;
+import unicsul.itinerario.tempoamigo.model.Localizacao;
 import unicsul.itinerario.tempoamigo.model.MensagemEmergencia;
 
 public class NotificacaoService {
@@ -41,8 +42,8 @@ public class NotificacaoService {
         notificationManager.createNotificationChannel(canal);
     }
 
-    public void notificarAlertas(List<Alerta> alertas, ContatoEmergencia contato) {
-        MensagemEmergencia mensagem = new MensagemEmergencia(contato);
+    public void notificarAlertas(List<Alerta> alertas, ContatoEmergencia contato, Localizacao localizacao) {
+        MensagemEmergencia mensagem = new MensagemEmergencia(contato, localizacao);
 
         String conteudo = alertas.stream()
                 .map(Alerta::formatarParaNotificacao)

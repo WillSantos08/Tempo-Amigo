@@ -1,7 +1,9 @@
 package unicsul.itinerario.tempoamigo.factory;
 
 import android.content.Context;
+
 import java.util.concurrent.CompletableFuture;
+
 import unicsul.itinerario.tempoamigo.model.ContatoEmergencia;
 
 public class ContatoEmergenciaFactory {

@@ -16,6 +16,7 @@ import unicsul.itinerario.tempoamigo.dto.ClimaDTO;
 import unicsul.itinerario.tempoamigo.factory.ContatoEmergenciaFactory;
 import unicsul.itinerario.tempoamigo.location.LocalizacaoClient;
 import unicsul.itinerario.tempoamigo.model.Alerta;
+import unicsul.itinerario.tempoamigo.model.Localizacao;
 import unicsul.itinerario.tempoamigo.network.clima.ClimaApiClient;
 import unicsul.itinerario.tempoamigo.repository.ClimaRepository;
 import unicsul.itinerario.tempoamigo.service.AlertaClimaticoService;
@@ -34,13 +35,20 @@ public class ClimaWorker extends Worker {
     public Result doWork() {
         Log.d(TAG, "=== Worker iniciado ===");
 
+        LocalizacaoClient localizacaoClient = new LocalizacaoClient(getApplicationContext());
         ClimaRepository repository = new ClimaRepository(
-                new LocalizacaoClient(getApplicationContext()),
+                localizacaoClient,
                 ClimaApiClient.criar()
         );
 
         try {
-            Log.d(TAG, "Buscando clima em background...");
+            Log.d(TAG, "Buscando localização e clima em background...");
+
+            Localizacao localizacao = localizacaoClient
+                    .obterLocalizacaoBackground()
+                    .thenApply(l -> new Localizacao(l.getLatitude(), l.getLongitude()))
+                    .get(30, TimeUnit.SECONDS);
+
             ClimaDTO clima = repository.buscarClimaPorLocalizacaoBackground().get(30, TimeUnit.SECONDS);
             Log.d(TAG, "Clima recebido: " + clima.current.temperature2m + "°C");
 
@@ -57,7 +65,8 @@ public class ClimaWorker extends Worker {
                 new ContatoEmergenciaFactory(getApplicationContext())
                         .buscar()
                         .thenAccept(contato ->
-                                new NotificacaoService(getApplicationContext()).notificarAlertas(alertas, contato)
+                                new NotificacaoService(getApplicationContext())
+                                        .notificarAlertas(alertas, contato, localizacao)
                         );
                 Log.d(TAG, "Notificação disparada com sucesso!");
             } else {

@@ -6,13 +6,19 @@ import java.util.stream.Collectors;
 public class MensagemEmergencia {
 
     private final ContatoEmergencia contato;
+    private final Localizacao localizacao;
 
-    public MensagemEmergencia(ContatoEmergencia contato) {
+    public MensagemEmergencia(ContatoEmergencia contato, Localizacao localizacao) {
         this.contato = contato;
+        this.localizacao = localizacao;
     }
 
     public String getNumero() {
         return contato.numero;
+    }
+
+    private String linkMaps() {
+        return "https://maps.google.com/?q=" + localizacao.latitude + "," + localizacao.longitude;
     }
 
     public String formatar(List<Alerta> alertas) {
@@ -20,6 +26,6 @@ public class MensagemEmergencia {
                 .map(Alerta::formatarParaNotificacao)
                 .collect(Collectors.joining("\n"));
 
-        return contato.mensagemInicial + "\n\n" + listaAlertas;
+        return contato.mensagemInicial + "\n\n" + listaAlertas + "\n\n📍 Minha localização: " + linkMaps();
     }
 }
