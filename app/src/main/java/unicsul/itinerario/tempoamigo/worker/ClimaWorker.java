@@ -34,47 +34,13 @@ public class ClimaWorker extends Worker {
     @Override
     public Result doWork() {
         Log.d(TAG, "=== Worker iniciado ===");
-
-        LocalizacaoClient localizacaoClient = new LocalizacaoClient(getApplicationContext());
-        ClimaRepository repository = new ClimaRepository(
-                localizacaoClient,
-                ClimaApiClient.criar()
-        );
-
         try {
-            Log.d(TAG, "Buscando localização e clima em background...");
-
-            Localizacao localizacao = localizacaoClient
-                    .obterLocalizacaoBackground()
-                    .thenApply(l -> new Localizacao(l.getLatitude(), l.getLongitude()))
-                    .get(30, TimeUnit.SECONDS);
-
-            ClimaDTO clima = repository.buscarClimaPorLocalizacaoBackground().get(30, TimeUnit.SECONDS);
-            Log.d(TAG, "Clima recebido: " + clima.current.temperature2m + "°C");
-
+            Localizacao localizacao = obterLocalizacao();
+            ClimaDTO clima = obterClima();
             List<Alerta> alertas = new AlertaClimaticoService(clima).verificarAlertas();
             Log.d(TAG, "Alertas encontrados: " + alertas.size());
-
-            if (!NotificationManagerCompat.from(getApplicationContext()).areNotificationsEnabled()) {
-                Log.w(TAG, "Notificações desativadas pelo usuário — abortando");
-                return Result.success();
-            }
-
-            if (!alertas.isEmpty()) {
-                Log.d(TAG, "Disparando notificação...");
-                new ContatoEmergenciaFactory(getApplicationContext())
-                        .buscar()
-                        .thenAccept(contato ->
-                                new NotificacaoService(getApplicationContext())
-                                        .notificarAlertas(alertas, contato, localizacao)
-                        );
-                Log.d(TAG, "Notificação disparada com sucesso!");
-            } else {
-                Log.d(TAG, "Sem alertas, nenhuma notificação enviada");
-            }
-
+            dispararNotificacaoSeNecessario(alertas, localizacao);
             return Result.success();
-
         } catch (TimeoutException e) {
             Log.e(TAG, "Timeout ao buscar localização/clima — tentará novamente", e);
             return Result.retry();
@@ -84,24 +50,41 @@ public class ClimaWorker extends Worker {
         }
     }
 
-    private String formatarAlerta(Alerta alerta) {
-        switch (alerta.tipo) {
-            case CALOR:
-                return "🔴 CALOR EXTREMO: " + alerta.valor + "°C — Evite exposição ao sol e hidrate-se.";
-            case FRIO:
-                return "🔵 FRIO EXTREMO: " + alerta.valor + "°C — Agasalhe-se e evite ficar ao relento.";
-            case UMIDADE_ALTA:
-                return "💧 UMIDADE ALTA: " + alerta.valor + "% — Risco de doenças respiratórias.";
-            case UMIDADE_BAIXA:
-                return "🏜️ UMIDADE BAIXA: " + alerta.valor + "% — Hidrate-se e umidifique o ambiente.";
-            case VENTO:
-                return "🌪️ VENTANIA EXTREMA: " + alerta.valor + " km/h — Evite áreas abertas.";
-            case CHUVA:
-                return "🌧️ CHUVA EXTREMA em " + alerta.data + ": " + alerta.valor + "mm — Risco de alagamentos.";
-            case PROBABILIDADE_CHUVA:
-                return "⛈️ PROBABILIDADE DE CHUVA em " + alerta.data + ": " + (int) alerta.valor + "%";
-            default:
-                return "";
+    private Localizacao obterLocalizacao() throws Exception {
+        Log.d(TAG, "Buscando localização em background...");
+        return new LocalizacaoClient(getApplicationContext())
+                .obterLocalizacaoBackground()
+                .thenApply(l -> new Localizacao(l.getLatitude(), l.getLongitude()))
+                .get(30, TimeUnit.SECONDS);
+    }
+
+    private ClimaDTO obterClima() throws Exception {
+        Log.d(TAG, "Buscando clima em background...");
+        ClimaRepository repository = new ClimaRepository(
+                new LocalizacaoClient(getApplicationContext()),
+                ClimaApiClient.criar()
+        );
+        ClimaDTO clima = repository.buscarClimaPorLocalizacaoBackground().get(30, TimeUnit.SECONDS);
+        Log.d(TAG, "Clima recebido: " + clima.current.temperature2m + "°C");
+        return clima;
+    }
+
+    private void dispararNotificacaoSeNecessario(List<Alerta> alertas, Localizacao localizacao) {
+        if (!NotificationManagerCompat.from(getApplicationContext()).areNotificationsEnabled()) {
+            Log.w(TAG, "Notificações desativadas pelo usuário — abortando");
+            return;
         }
+        if (alertas.isEmpty()) {
+            Log.d(TAG, "Sem alertas, nenhuma notificação enviada");
+            return;
+        }
+        Log.d(TAG, "Disparando notificação...");
+        new ContatoEmergenciaFactory(getApplicationContext())
+                .buscar()
+                .thenAccept(contato ->
+                        new NotificacaoService(getApplicationContext())
+                                .notificarAlertas(alertas, contato, localizacao)
+                );
+        Log.d(TAG, "Notificação disparada com sucesso!");
     }
 }
