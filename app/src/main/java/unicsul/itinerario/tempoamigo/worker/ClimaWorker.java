@@ -12,13 +12,12 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import unicsul.itinerario.tempoamigo.factory.ClimaRepositoryFactory;
 import unicsul.itinerario.tempoamigo.factory.ContatoEmergenciaFactory;
 import unicsul.itinerario.tempoamigo.location.LocalizacaoClient;
 import unicsul.itinerario.tempoamigo.model.Alerta;
 import unicsul.itinerario.tempoamigo.model.Clima;
 import unicsul.itinerario.tempoamigo.model.Localizacao;
-import unicsul.itinerario.tempoamigo.network.clima.ClimaApiClient;
-import unicsul.itinerario.tempoamigo.network.clima.OpenMeteoApiClient;
 import unicsul.itinerario.tempoamigo.repository.ClimaRepository;
 import unicsul.itinerario.tempoamigo.service.AlertaClimaticoService;
 import unicsul.itinerario.tempoamigo.service.NotificacaoService;
@@ -61,11 +60,7 @@ public class ClimaWorker extends Worker {
 
     private Clima obterClima() throws Exception {
         Log.d(TAG, "Buscando clima em background...");
-        ClimaApiClient apiClient = OpenMeteoApiClient.criar();
-        ClimaRepository repository = new ClimaRepository(
-                new LocalizacaoClient(getApplicationContext()),
-                apiClient
-        );
+        ClimaRepository repository = ClimaRepositoryFactory.criar(getApplicationContext());
         Clima clima = repository.buscarClimaPorLocalizacaoBackground().get(30, TimeUnit.SECONDS);
         Log.d(TAG, "Clima recebido: " + clima.getTemperatura() + "°C");
         return clima;

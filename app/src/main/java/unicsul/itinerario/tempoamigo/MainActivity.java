@@ -22,11 +22,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import unicsul.itinerario.tempoamigo.location.LocalizacaoClient;
+import unicsul.itinerario.tempoamigo.factory.ClimaRepositoryFactory;
 import unicsul.itinerario.tempoamigo.location.PermissaoHelper;
 import unicsul.itinerario.tempoamigo.model.Alerta;
-import unicsul.itinerario.tempoamigo.model.Clima;
-import unicsul.itinerario.tempoamigo.network.clima.OpenMeteoApiClient;
 import unicsul.itinerario.tempoamigo.repository.ClimaRepository;
 import unicsul.itinerario.tempoamigo.service.AlertaClimaticoService;
 import unicsul.itinerario.tempoamigo.worker.ClimaWorker;
@@ -47,10 +45,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        climaRepository = new ClimaRepository(
-                new LocalizacaoClient(getApplicationContext()),
-                OpenMeteoApiClient.criar()
-        );
+        climaRepository = ClimaRepositoryFactory.criar(getApplicationContext());
 
         permissao = new PermissaoHelper(this);
         permissao.solicitar(() -> {
