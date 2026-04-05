@@ -9,8 +9,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.QueryMap;
-
-import unicsul.itinerario.tempoamigo.dto.ClimaDTO;
 import unicsul.itinerario.tempoamigo.model.Clima;
 import unicsul.itinerario.tempoamigo.network.HttpClient;
 
@@ -57,7 +55,7 @@ public class OpenMeteoApiClient implements ClimaApiClient {
 
     private interface OpenMeteoApi {
         @GET("v1/forecast")
-        CompletableFuture<ClimaDTO> buscarClima(
+        CompletableFuture<OpenMeteoForecast> buscarClima(
                 @QueryMap Map<String, String> parametros
         );
     }

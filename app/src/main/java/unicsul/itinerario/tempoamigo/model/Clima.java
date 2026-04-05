@@ -30,11 +30,31 @@ public class Clima {
         this.previsaoDiaria = previsaoDiaria;
     }
 
-    public double getTemperatura() { return temperatura; }
-    public int getUmidade() { return umidade; }
-    public double getVelocidadeVento() { return velocidadeVento; }
-    public double getPrecipitacaoAtual() { return precipitacaoAtual; }
-    public int getCodigoClima() { return codigoClima; }
-    public List<ClimaHorario> getPrevisaoHoraria() { return previsaoHoraria; }
-    public List<ClimaDiario> getPrevisaoDiaria() { return previsaoDiaria; }
+    public double getTemperatura() {
+        return temperatura;
+    }
+
+    public int getUmidade() {
+        return umidade;
+    }
+
+    public double getVelocidadeVento() {
+        return velocidadeVento;
+    }
+
+    public double getPrecipitacaoAtual() {
+        return precipitacaoAtual;
+    }
+
+    public int getCodigoClima() {
+        return codigoClima;
+    }
+
+    public List<ClimaHorario> getPrevisaoHoraria() {
+        return previsaoHoraria;
+    }
+
+    public List<ClimaDiario> getPrevisaoDiaria() {
+        return previsaoDiaria;
+    }
 }

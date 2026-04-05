@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import unicsul.itinerario.tempoamigo.dto.ClimaDTO;
 import unicsul.itinerario.tempoamigo.model.Clima;
 import unicsul.itinerario.tempoamigo.model.ClimaDiario;
 import unicsul.itinerario.tempoamigo.model.ClimaHorario;
@@ -19,9 +18,10 @@ public class ClimaMapper {
     private static final DateTimeFormatter FORMATO_DATA =
             DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    private ClimaMapper() {}
+    private ClimaMapper() {
+    }
 
-    public static Clima fromOpenMeteo(ClimaDTO dto) {
+    public static Clima fromOpenMeteo(OpenMeteoForecast dto) {
         return new Clima(
                 dto.current.temperature2m,
                 dto.current.relativeHumidity2m,
@@ -33,7 +33,7 @@ public class ClimaMapper {
         );
     }
 
-    private static List<ClimaHorario> mapearHorarios(ClimaDTO.Hourly hourly) {
+    private static List<ClimaHorario> mapearHorarios(OpenMeteoForecast.Hourly hourly) {
         List<ClimaHorario> resultado = new ArrayList<>();
         for (int i = 0; i < hourly.time.size(); i++) {
             String horario = LocalDateTime.parse(hourly.time.get(i))
@@ -47,7 +47,7 @@ public class ClimaMapper {
         return resultado;
     }
 
-    private static List<ClimaDiario> mapearDiarios(ClimaDTO.Daily daily) {
+    private static List<ClimaDiario> mapearDiarios(OpenMeteoForecast.Daily daily) {
         List<ClimaDiario> resultado = new ArrayList<>();
         for (int i = 0; i < daily.time.size(); i++) {
             String data = LocalDate.parse(daily.time.get(i))

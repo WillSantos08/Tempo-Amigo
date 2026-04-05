@@ -1,15 +1,11 @@
-package unicsul.itinerario.tempoamigo.dto;
+package unicsul.itinerario.tempoamigo.network.clima;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class ClimaDTO {
+public class OpenMeteoForecast {
 
     public double latitude;
     public double longitude;
@@ -102,13 +98,6 @@ public class ClimaDTO {
 
         @SerializedName("precipitation_probability")
         public List<Integer> precipitationProbability = new ArrayList<>();
-
-        public List<String> getTimeFormatado() {
-            return time.stream()
-                    .map(t -> LocalDateTime.parse(t)
-                            .format(DateTimeFormatter.ofPattern("dd/MM HH:mm")))
-                    .collect(Collectors.toList());
-        }
     }
 
 
@@ -137,12 +126,5 @@ public class ClimaDTO {
 
         @SerializedName("precipitation_sum")
         public List<Double> precipitationSum = new ArrayList<>();
-
-        public List<String> getTimeFormatado() {
-            return time.stream()
-                    .map(t -> LocalDate.parse(t)
-                            .format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
-                    .collect(Collectors.toList());
-        }
     }
 }
