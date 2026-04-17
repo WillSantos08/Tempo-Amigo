@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_main"
+    app:startDestination="@id/menu_home">
+
+    <fragment
+        android:id="@+id/menu_home"
+        android:name="unicsul.itinerario.tempoamigo.ui.HomeFragment"
+        android:label="HomeFragment" />
+
+    <fragment
+        android:id="@+id/menu_edit"
+        android:name="unicsul.itinerario.tempoamigo.ui.EdicaoFragment"
+        android:label="fragment_edicao"
+        tools:layout="@layout/fragment_edicao" />
+</navigation>
