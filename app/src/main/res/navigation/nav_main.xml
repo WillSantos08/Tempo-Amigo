@@ -15,4 +15,10 @@
         android:name="unicsul.itinerario.tempoamigo.ui.EdicaoFragment"
         android:label="fragment_edicao"
         tools:layout="@layout/fragment_edicao" />
+
+    <fragment
+        android:id="@+id/menu_sobre"
+        android:name="unicsul.itinerario.tempoamigo.ui.SobreFragment"
+        android:label="fragment_sobre"
+        tools:layout="@layout/fragment_sobre" />
 </navigation>

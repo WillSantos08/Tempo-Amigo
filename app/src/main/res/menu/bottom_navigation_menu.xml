@@ -10,4 +10,9 @@
         android:id="@+id/menu_edit"
         android:icon="@drawable/baseline_home"
         android:title="Edição" />
+
+    <item
+        android:id="@+id/menu_sobre"
+        android:icon="@drawable/baseline_home"
+        android:title="Sobre" />
 </menu>
