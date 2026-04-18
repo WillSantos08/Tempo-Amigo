@@ -12,8 +12,8 @@ public class ClimaVisualResolver {
         NEVE("neve", "Nevando", 1),
         CHUVA("chuva", "Tempo Chuvoso", 1),
         VENTO("vento", "Ventania", 3),
-        ENSOLARADO("ensolarado", "Tempo Aberto", 3),
-        NOITE("noite", "Céu Limpo", 2);
+        ENSOLARADO("ensolarado", "Tempo Bom", 3),
+        NOITE("noite", "Tempo Bom", 2);
 
         public final String prefixo;
         public final String descricao;
