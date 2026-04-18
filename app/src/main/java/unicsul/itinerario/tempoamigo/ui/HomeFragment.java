@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ import unicsul.itinerario.tempoamigo.factory.ClimaRepositoryFactory;
 import unicsul.itinerario.tempoamigo.model.Alerta;
 import unicsul.itinerario.tempoamigo.repository.ClimaRepository;
 import unicsul.itinerario.tempoamigo.service.AlertaClimaticoService;
+import unicsul.itinerario.tempoamigo.ui.util.ImagemClimaResolver;
 import unicsul.itinerario.tempoamigo.worker.ClimaWorker;
 
 public class HomeFragment extends Fragment {
@@ -52,6 +54,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void atualizarClima(View view) {
+        ImageView imageViewClima = view.findViewById(R.id.imageViewClima);
         TextView textViewTemp = view.findViewById(R.id.textViewTemp);
         TextView textViewUmidade = view.findViewById(R.id.textViewUmidade);
         TextView textViewVento = view.findViewById(R.id.textViewVento);
@@ -60,6 +63,11 @@ public class HomeFragment extends Fragment {
 
         climaRepository.buscarClimaPorLocalizacao()
                 .thenAcceptAsync(clima -> {
+
+                    String nomeDrawable = ImagemClimaResolver.resolver(clima);
+                    int resId = getResources().getIdentifier(nomeDrawable, "drawable", requireContext().getPackageName());
+                    imageViewClima.setImageResource(resId);
+
                     textViewTemp.setText(clima.getTemperatura() + "°C");
                     textViewUmidade.setText("Umidade: " + clima.getUmidade() + "%");
                     textViewVento.setText("Vento: " + clima.getVelocidadeVento() + " km/h");
