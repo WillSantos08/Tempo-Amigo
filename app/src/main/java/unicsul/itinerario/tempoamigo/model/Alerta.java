@@ -3,7 +3,7 @@ package unicsul.itinerario.tempoamigo.model;
 public class Alerta {
 
     public enum Tipo {
-        CALOR, FRIO, UMIDADE_ALTA, UMIDADE_BAIXA, VENTO, CHUVA, PROBABILIDADE_CHUVA
+        CALOR, FRIO, UMIDADE_ALTA, UMIDADE_BAIXA, VENTO, CHUVA, PROBABILIDADE_CHUVA, TEMPESTADE, NEVE
     }
 
     public enum Severidade {
@@ -42,6 +42,14 @@ public class Alerta {
                 return "🌧️ CHUVA EXTREMA em " + data + ": " + valor + "mm — Risco de alagamentos.";
             case PROBABILIDADE_CHUVA:
                 return "⛈️ PROBABILIDADE DE CHUVA em " + data + ": " + (int) valor + "%";
+            case TEMPESTADE:
+                return severidade == Severidade.CRITICO
+                        ? "⛈️ TEMPESTADE SEVERA — Risco de granizo. Procure abrigo imediatamente."
+                        : "🌩️ TEMPESTADE — Raios na região. Evite áreas abertas.";
+            case NEVE:
+                return severidade == Severidade.PERIGO
+                        ? "❄️ NEVASCA INTENSA — Evite sair. Risco de bloqueio de vias."
+                        : "🌨️ NEVE LEVE — Atenção ao dirigir. Pistas podem estar escorregadias.";
             default:
                 return "";
         }
@@ -63,6 +71,14 @@ public class Alerta {
                 return "Chuva intensa em " + data + ": " + valor + "mm";
             case PROBABILIDADE_CHUVA:
                 return "Chuva provável em " + data + ": " + (int) valor + "%";
+            case TEMPESTADE:
+                return severidade == Severidade.CRITICO
+                        ? "Tempestade severa com granizo na região"
+                        : "Tempestade com raios na região";
+            case NEVE:
+                return severidade == Severidade.PERIGO
+                        ? "Nevasca intensa"
+                        : "Neve leve";
             default:
                 return "";
         }
