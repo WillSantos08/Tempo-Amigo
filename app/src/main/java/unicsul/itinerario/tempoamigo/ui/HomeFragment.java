@@ -13,6 +13,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavOptions;
+import androidx.navigation.Navigation;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 import unicsul.itinerario.tempoamigo.R;
 import unicsul.itinerario.tempoamigo.action.AcaoAlertaRegistry;
 import unicsul.itinerario.tempoamigo.factory.ClimaRepositoryFactory;
+import unicsul.itinerario.tempoamigo.factory.ContatoEmergenciaFactory;
 import unicsul.itinerario.tempoamigo.model.Alerta;
 import unicsul.itinerario.tempoamigo.repository.ClimaRepository;
 import unicsul.itinerario.tempoamigo.service.AlertaClimaticoService;
@@ -30,6 +33,8 @@ import unicsul.itinerario.tempoamigo.ui.util.ClimaVisualResolver;
 import unicsul.itinerario.tempoamigo.worker.ClimaWorker;
 
 public class HomeFragment extends Fragment {
+
+    private static final String TAG = "HomeFragment";
 
     private ClimaRepository climaRepository;
 
@@ -46,20 +51,7 @@ public class HomeFragment extends Fragment {
         climaRepository = ClimaRepositoryFactory.criar(requireContext());
 
         atualizarClima(view);
-
-        //TODO: Remover botão de teste
-        view.findViewById(R.id.buttonTestar).setOnClickListener(v -> {
-            Data inputData = new Data.Builder()
-                    .putString(ClimaWorker.INPUT_ACAO, AcaoAlertaRegistry.NOTIFICAR)
-                    .build();
-
-            OneTimeWorkRequest teste = new OneTimeWorkRequest.Builder(ClimaWorker.class)
-                    .setInputData(inputData)
-                    .build();
-
-            WorkManager.getInstance(requireContext()).enqueue(teste);
-            Log.d("ClimaFragment", "Worker de WhatsApp enfileirado");
-        });
+        configurarBotaoWhatsApp(view);
     }
 
     private void atualizarClima(View view) {
@@ -96,8 +88,35 @@ public class HomeFragment extends Fragment {
                     textViewAlertas.setText(textoAlertas);
                 }, mainThread::post)
                 .exceptionally(erro -> {
-                    Log.e("CLIMA", erro.getMessage());
+                    Log.e(TAG, erro.getMessage());
                     return null;
                 });
+    }
+
+    private void configurarBotaoWhatsApp(View view) {
+        view.findViewById(R.id.buttonWhatsApp).setOnClickListener(v -> {
+            new ContatoEmergenciaFactory(requireContext())
+                    .buscar()
+                    .thenAcceptAsync(contato -> {
+                        if (contato == null) {
+                            Navigation.findNavController(view).navigate(R.id.menu_edit);
+                        } else {
+                            dispararWorker(AcaoAlertaRegistry.ABRIR_WHATSAPP);
+                        }
+                    }, requireActivity().getMainExecutor());
+        });
+    }
+
+    private void dispararWorker(String acao) {
+        Data inputData = new Data.Builder()
+                .putString(ClimaWorker.INPUT_ACAO, acao)
+                .build();
+
+        OneTimeWorkRequest trabalho = new OneTimeWorkRequest.Builder(ClimaWorker.class)
+                .setInputData(inputData)
+                .build();
+
+        WorkManager.getInstance(requireContext()).enqueue(trabalho);
+        Log.d(TAG, "Worker enfileirado com ação: " + acao);
     }
 }

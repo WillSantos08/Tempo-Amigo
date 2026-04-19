@@ -88,7 +88,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/buttonTestar"
+        android:id="@+id/buttonWhatsApp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Testar Notificação"
