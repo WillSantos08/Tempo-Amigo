@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import unicsul.itinerario.tempoamigo.action.AcaoAlerta;
+import unicsul.itinerario.tempoamigo.action.AcaoAlertaRegistry;
+import unicsul.itinerario.tempoamigo.action.AlertaHandler;
 import unicsul.itinerario.tempoamigo.factory.ClimaRepositoryFactory;
 import unicsul.itinerario.tempoamigo.factory.ContatoEmergenciaFactory;
 import unicsul.itinerario.tempoamigo.location.LocalizacaoClient;
@@ -25,6 +28,7 @@ import unicsul.itinerario.tempoamigo.service.NotificacaoService;
 public class ClimaWorker extends Worker {
 
     public static final String TAG = "ClimaWorker";
+    public static final String INPUT_ACAO = "acao";
 
     public ClimaWorker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
@@ -39,7 +43,11 @@ public class ClimaWorker extends Worker {
             Clima clima = obterClima();
             List<Alerta> alertas = new AlertaClimaticoService(clima).verificarAlertas();
             Log.d(TAG, "Alertas encontrados: " + alertas.size());
-            dispararNotificacaoSeNecessario(alertas, localizacao);
+
+            if (!verificarNotificacoesHabilitadas(alertas)) return Result.success();
+
+            processarAlertas(alertas, localizacao);
+
             return Result.success();
         } catch (TimeoutException e) {
             Log.e(TAG, "Timeout ao buscar localização/clima — tentará novamente", e);
@@ -66,31 +74,25 @@ public class ClimaWorker extends Worker {
         return clima;
     }
 
-    private void dispararNotificacaoSeNecessario(List<Alerta> alertas, Localizacao localizacao) {
+    private void processarAlertas(List<Alerta> alertas, Localizacao localizacao) {
+        String chaveAcao = getInputData().getString(INPUT_ACAO);
+        AcaoAlerta acao = new AcaoAlertaRegistry(getApplicationContext()).resolver(chaveAcao);
+        ContatoEmergenciaFactory factory = new ContatoEmergenciaFactory(getApplicationContext());
+
+        new AlertaHandler(factory, alertas, localizacao, acao).executar();
+    }
+
+    private boolean verificarNotificacoesHabilitadas(List<Alerta> alertas) {
         if (!NotificationManagerCompat.from(getApplicationContext()).areNotificationsEnabled()) {
             Log.w(TAG, "Notificações desativadas pelo usuário — abortando");
-            return;
+            return false;
         }
-
         if (alertas.isEmpty()) {
             Log.d(TAG, "Sem alertas — cancelando notificação anterior se existir");
             NotificationManagerCompat.from(getApplicationContext())
                     .cancel(NotificacaoService.NOTIFICACAO_ID);
-            return;
+            return false;
         }
-
-        Log.d(TAG, "Disparando notificação...");
-        new ContatoEmergenciaFactory(getApplicationContext())
-                .buscar()
-                .thenAccept(contato -> {
-                    NotificacaoService notificacaoService = new NotificacaoService(getApplicationContext());
-                    if (contato == null) {
-                        Log.w(TAG, "Nenhum contato cadastrado — notificando sem ação de WhatsApp");
-                        notificacaoService.notificarAlertasSemContato(alertas);
-                    } else {
-                        notificacaoService.notificarAlertas(alertas, contato, localizacao);
-                    }
-                });
-        Log.d(TAG, "Notificação disparada com sucesso!");
+        return true;
     }
 }

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import unicsul.itinerario.tempoamigo.R;
+import unicsul.itinerario.tempoamigo.action.AcaoAlertaRegistry;
 import unicsul.itinerario.tempoamigo.factory.ClimaRepositoryFactory;
 import unicsul.itinerario.tempoamigo.model.Alerta;
 import unicsul.itinerario.tempoamigo.repository.ClimaRepository;
@@ -47,9 +49,16 @@ public class HomeFragment extends Fragment {
 
         //TODO: Remover botão de teste
         view.findViewById(R.id.buttonTestar).setOnClickListener(v -> {
-            OneTimeWorkRequest teste = new OneTimeWorkRequest.Builder(ClimaWorker.class).build();
+            Data inputData = new Data.Builder()
+                    .putString(ClimaWorker.INPUT_ACAO, AcaoAlertaRegistry.NOTIFICAR)
+                    .build();
+
+            OneTimeWorkRequest teste = new OneTimeWorkRequest.Builder(ClimaWorker.class)
+                    .setInputData(inputData)
+                    .build();
+
             WorkManager.getInstance(requireContext()).enqueue(teste);
-            Log.d("ClimaFragment", "Worker de teste enfileirado");
+            Log.d("ClimaFragment", "Worker de WhatsApp enfileirado");
         });
     }
 

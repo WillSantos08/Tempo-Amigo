@@ -7,6 +7,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 import androidx.work.Constraints;
+import androidx.work.Data;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
@@ -14,6 +15,7 @@ import androidx.work.WorkManager;
 
 import java.util.concurrent.TimeUnit;
 
+import unicsul.itinerario.tempoamigo.action.AcaoAlertaRegistry;
 import unicsul.itinerario.tempoamigo.databinding.ActivityMainBinding;
 import unicsul.itinerario.tempoamigo.location.PermissaoHelper;
 import unicsul.itinerario.tempoamigo.worker.ClimaWorker;
@@ -45,9 +47,14 @@ public class MainActivity extends AppCompatActivity {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
 
+        Data inputData = new Data.Builder()
+                .putString(ClimaWorker.INPUT_ACAO, AcaoAlertaRegistry.NOTIFICAR)
+                .build();
+
         PeriodicWorkRequest trabalho = new PeriodicWorkRequest.Builder(
                 ClimaWorker.class, 15, TimeUnit.MINUTES)
                 .setConstraints(constraints)
+                .setInputData(inputData)
                 .build();
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(

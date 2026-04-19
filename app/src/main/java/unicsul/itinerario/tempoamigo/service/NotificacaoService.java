@@ -77,16 +77,18 @@ public class NotificacaoService {
         notificationManager.notify(NOTIFICACAO_ID, builder.build());
     }
 
-    private PendingIntent criarPendingIntentWhatsApp(MensagemEmergencia mensagem, List<Alerta> alertas) {
+    public Intent criarIntentWhatsApp(MensagemEmergencia mensagem, List<Alerta> alertas) {
         String url = "https://wa.me/" + mensagem.getNumero()
                 + "?text=" + Uri.encode(mensagem.formatar(alertas));
 
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        return new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+    }
 
+    private PendingIntent criarPendingIntentWhatsApp(MensagemEmergencia mensagem, List<Alerta> alertas) {
         return PendingIntent.getActivity(
                 context,
                 0,
-                intent,
+                criarIntentWhatsApp(mensagem, alertas),
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
     }
