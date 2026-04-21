@@ -27,7 +27,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tempo Amigo é um aplicativo desenvolvido especialmente para o público da terceira idade, com o objetivo de auxiliar no enfrentamento das condições climáticas do dia a dia. Ele envia notificações claras e acessíveis sobre o clima atual, ajudando o usuário a se prevenir contra situações de risco. Além disso, o aplicativo permite que o idoso envie rapidamente uma mensagem para um familiar, alertando sobre possíveis perigos relacionados ao clima e garantindo mais segurança e tranquilidade."
+            android:text="Tempo Amigo é um aplicativo desenvolvido especialmente para o público da terceira idade, com o objetivo de auxiliar no enfrentamento das condições climáticas do dia a dia. Ele envia notificações claras e acessíveis sobre o clima atual, ajudando o usuário a se prevenir contra situações de risco. Além disso, o aplicativo permite que o idoso envie rapidamente uma mensagem para um familiar, alertando sobre possíveis perigos relacionados ao clima e garantindo mais segurança e tranquilidade de todos."
             android:textColor="#FFFFFF"
             android:textSize="14sp"
             android:lineSpacingExtra="4dp"
