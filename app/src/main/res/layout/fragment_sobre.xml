@@ -33,26 +33,17 @@
             android:lineSpacingExtra="4dp"
             android:justificationMode="inter_word" />
 
-        <!-- ===== DIVISOR ===== -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#2E2E4A"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="20dp" />
-
-        <!-- ===== TÍTULO "Sobre nós" ===== -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:fontFamily="sans-serif-medium"
             android:text="Sobre nós"
             android:textColor="#87BAED"
             android:textSize="24sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-medium"
-            android:layout_marginBottom="14dp" />
+            android:textStyle="bold" />
 
-        <!-- ===== CORPO 2 ===== -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

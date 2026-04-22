@@ -15,7 +15,6 @@
         android:paddingTop="28dp"
         android:paddingBottom="28dp">
 
-        <!-- ===== TÍTULO "Configurações" ===== -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,7 +25,6 @@
             android:fontFamily="sans-serif-medium"
             android:layout_marginBottom="28dp" />
 
-        <!-- ===== CAMPO: Nome do Contato ===== -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,7 +35,7 @@
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
             app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColorStateList="@color/cor_borda_input"
+            app:boxStrokeColor="@color/cor_borda_input"
             app:hintTextColor="#87BAED"
             app:startIconDrawable="@drawable/ic_contato"
             app:startIconTint="#87BAED">
@@ -52,7 +50,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- ===== CAMPO: Número do Contato ===== -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -64,7 +61,7 @@
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
             app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColorStateList="@color/cor_borda_input"
+            app:boxStrokeColor="@color/cor_borda_input"
             app:hintTextColor="#87BAED"
             app:startIconDrawable="@drawable/ic_telefone"
             app:startIconTint="#87BAED">
@@ -79,7 +76,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- ===== LABEL: Mensagem personalizada ===== -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -91,7 +87,6 @@
             android:layout_marginTop="24dp"
             android:layout_marginBottom="10dp" />
 
-        <!-- ===== CAMPO: Mensagem ===== -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -102,7 +97,7 @@
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
             app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColorStateList="@color/cor_borda_input"
+            app:boxStrokeColor="@color/cor_borda_input"
             app:hintTextColor="#4786C4">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -117,7 +112,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- ===== BOTÃO SALVAR ===== -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonSalvar"
             android:layout_width="match_parent"
