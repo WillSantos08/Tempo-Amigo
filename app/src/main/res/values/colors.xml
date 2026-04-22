@@ -2,4 +2,19 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Cores do Projeto -->
+    <color name="background_grey">#484D50</color>
+    <color name="box_background_grey">#D3D3D3</color>
+
+    <color name="blue">#4786C4</color>
+    <color name="light_blue">#87BAED</color>
+    <color name="orange">#f5a91d</color>
+    <color name="light_orange">#f0bf65</color>
+
+    <!-- Cores dos Alertas -->
+    <color name="notify_green">#1df54f</color>
+    <color name="notify_orange">#f5a91d</color>
+    <color name="notify_red">#f51d33</color>
+
 </resources>

@@ -14,7 +14,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
@@ -67,6 +66,7 @@ public class HomeFragment extends Fragment {
 
         climaRepository.buscarClimaPorLocalizacao()
                 .thenAcceptAsync(clima -> {
+                    if (!isAdded()) return;
 
                     String nomeDrawable = ClimaVisualResolver.resolverImagem(clima);
                     int resId = getResources().getIdentifier(nomeDrawable, "drawable", requireContext().getPackageName());
@@ -102,6 +102,8 @@ public class HomeFragment extends Fragment {
             new ContatoEmergenciaFactory(requireContext())
                     .buscar()
                     .thenAcceptAsync(contato -> {
+                        if (!isAdded()) return;
+
                         if (contato == null) {
                             Navigation.findNavController(view).navigate(R.id.action_home_to_edicao);
                         } else {
@@ -112,6 +114,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void dispararWorker(String acao) {
+        if (!isAdded()) return;
+
         Data inputData = new Data.Builder()
                 .putString(ClimaWorker.INPUT_ACAO, acao)
                 .build();
