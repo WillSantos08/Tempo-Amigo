@@ -55,12 +55,25 @@ public class EdicaoFragment extends Fragment {
         editNumero.addTextChangedListener(watcher);
         editMensagem.addTextChangedListener(watcher);
 
-        buttonSalvar.setOnClickListener(v -> salvar());
+        buttonSalvar.setOnClickListener(v -> {
+            v.animate()
+                    .scaleX(0.95f)
+                    .scaleY(0.95f)
+                    .setDuration(100)
+                    .withEndAction(() -> v.animate()
+                            .scaleX(1f)
+                            .scaleY(1f)
+                            .setDuration(100)
+                            .start())
+                    .start();
+            salvar();
+        });
     }
 
     private void carregarDados() {
         CompletableFuture.supplyAsync(() -> dao.buscarUltimo())
                 .thenAcceptAsync(contato -> {
+                    if (!isAdded()) return;
                     contatoAtual = contato;
                     if (contato != null) {
                         editNome.setText(contato.nome);
@@ -84,6 +97,7 @@ public class EdicaoFragment extends Fragment {
                 dao.atualizar(atualizado);
             }
         }).thenRunAsync(() -> {
+            if (!isAdded()) return;
             contatoAtual = new ContatoEmergencia(numero, nome, mensagem);
             atualizarBotao();
         }, requireActivity().getMainExecutor());
@@ -100,6 +114,12 @@ public class EdicaoFragment extends Fragment {
                 || !numero.equals(contatoAtual.numero)
                 || !mensagem.equals(contatoAtual.mensagemInicial);
 
-        buttonSalvar.setEnabled(preenchido && alterado);
+        boolean habilitado = preenchido && alterado;
+        buttonSalvar.setEnabled(habilitado);
+
+        buttonSalvar.animate()
+                .alpha(habilitado ? 1.0f : 0.4f)
+                .setDuration(200)
+                .start();
     }
 }
