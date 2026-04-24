@@ -3,6 +3,7 @@ package unicsul.itinerario.tempoamigo;
 import android.os.Bundle;
 import android.widget.ImageButton;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         NavOptions navOptions = new NavOptions.Builder()
                 .setLaunchSingleTop(true)
+                .setPopUpTo(R.id.menu_home, false)
                 .build();
 
         binding.menuHome.setOnClickListener(v -> {
@@ -74,6 +76,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding.menuHome.setTranslationY(LIFT_Y);
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (navController.getCurrentDestination().getId() == R.id.menu_home) {
+                    finish();
+                } else {
+                    navController.navigate(R.id.menu_home, null, navOptions);
+                    updateSelectedButton(R.id.menu_home);
+                }
+            }
+        });
     }
 
     private void updateSelectedButton(int selectedId) {
