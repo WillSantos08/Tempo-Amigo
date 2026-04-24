@@ -92,7 +92,10 @@ public class HomeFragment extends Fragment {
 
                 }, mainThread::post)
                 .exceptionally(erro -> {
-                    Log.e(TAG, erro.getMessage());
+                    mainThread.post(() ->
+                            textViewAlertas.setText("Não foi possível carregar o clima. Verifique sua conexão.")
+                    );
+                    Log.e(TAG, "Falha após retries: " + erro.getMessage());
                     return null;
                 });
     }
