@@ -19,6 +19,7 @@ import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,9 @@ public class HomeFragment extends Fragment {
         TextView textViewVento = view.findViewById(R.id.textViewVento);
         TextView textViewChuva = view.findViewById(R.id.textViewChuva);
         TextView textViewAlertas = view.findViewById(R.id.textViewAlertas);
+        TextView labelAlerta = view.findViewById(R.id.textViewAlertaLabel);
+        android.widget.ImageView imageViewAlertaIcon = view.findViewById(R.id.imageViewAlertaIcon);
+        com.google.android.material.card.MaterialCardView cardAlertas = view.findViewById(R.id.cardAlertas);
         Button buttonWhatsApp = view.findViewById(R.id.buttonWhatsApp);
 
         climaRepository.buscarClimaPorLocalizacao()
@@ -81,21 +85,29 @@ public class HomeFragment extends Fragment {
 
                     List<Alerta> alertas = new AlertaClimaticoService(clima).verificarAlertas();
 
-                    String textoAlertas = alertas.isEmpty()
-                            ? "Nenhuma condição extrema detectada."
-                            : alertas.stream()
-                            .map(Alerta::formatarParaTela)
-                            .collect(Collectors.joining("\n\n"));
+                    if (alertas.isEmpty()) {
+                        cardAlertas.setVisibility(View.GONE);
+                        buttonWhatsApp.setVisibility(View.GONE);
+                    } else {
+                        String textoAlertas = alertas.stream()
+                                .map(Alerta::formatarParaTela)
+                                .collect(Collectors.joining("\n\n"));
+                        textViewAlertas.setText(textoAlertas);
 
-                    textViewAlertas.setText(textoAlertas);
-                    buttonWhatsApp.setVisibility(alertas.isEmpty() ? View.GONE : View.VISIBLE);
+                        int cor = resolverCorSeveridade(alertas);
+                        int corFundo = androidx.core.graphics.ColorUtils.setAlphaComponent(cor, 30);
+                        cardAlertas.setStrokeColor(cor);
+                        cardAlertas.setCardBackgroundColor(corFundo);
+                        labelAlerta.setTextColor(cor);
+                        imageViewAlertaIcon.setColorFilter(cor);
+
+                        cardAlertas.setVisibility(View.VISIBLE);
+                        buttonWhatsApp.setVisibility(View.VISIBLE);
+                    }
 
                 }, mainThread::post)
                 .exceptionally(erro -> {
-                    mainThread.post(() ->
-                            textViewAlertas.setText("Não foi possível carregar o clima. Verifique sua conexão.")
-                    );
-                    Log.e(TAG, "Falha após retries: " + erro.getMessage());
+                    Log.e(TAG, erro.getMessage());
                     return null;
                 });
     }
@@ -114,6 +126,13 @@ public class HomeFragment extends Fragment {
                         }
                     }, requireActivity().getMainExecutor());
         });
+    }
+
+    private int resolverCorSeveridade(List<Alerta> alertas) {
+        return alertas.stream()
+                .max(Comparator.comparingInt(a -> a.severidade.ordinal()))
+                .map(a -> requireContext().getColor(a.resolverCor()))
+                .orElse(requireContext().getColor(R.color.notify_green));
     }
 
     private void dispararWorker(String acao) {

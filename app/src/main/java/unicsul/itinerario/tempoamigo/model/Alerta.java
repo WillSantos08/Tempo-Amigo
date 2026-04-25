@@ -1,5 +1,7 @@
 package unicsul.itinerario.tempoamigo.model;
 
+import unicsul.itinerario.tempoamigo.R;
+
 public class Alerta {
 
     public enum Tipo {
@@ -24,6 +26,14 @@ public class Alerta {
 
     public Alerta(Tipo tipo, Severidade severidade, double valor) {
         this(tipo, severidade, valor, null);
+    }
+
+    public int resolverCor() {
+        switch (severidade) {
+            case CRITICO: return R.color.notify_red;
+            case PERIGO:  return R.color.notify_orange;
+            default:      return R.color.notify_green;
+        }
     }
 
     public String formatarParaTela() {

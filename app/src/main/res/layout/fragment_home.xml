@@ -13,8 +13,8 @@
 
         <ImageView
             android:id="@+id/imageViewClima"
-            android:layout_width="361dp"
-            android:layout_height="373dp"
+            android:layout_width="0dp"
+            android:layout_height="300dp"
             android:layout_marginStart="48dp"
             android:layout_marginTop="48dp"
             android:layout_marginEnd="48dp"
@@ -31,13 +31,12 @@
             android:layout_marginTop="12dp"
             android:fontFamily="sans-serif-medium"
             android:text="--"
-            android:textColor="@color/blue"
-            android:textSize="32sp"
+            android:textColor="#87BAED"
+            android:textSize="28sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/imageViewClima" />
-
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardClima"
@@ -69,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
                     android:text="--°C"
-                    android:textColor="@color/blue"
+                    android:textColor="#4786C4"
                     android:textSize="64sp"
                     android:textStyle="bold" />
 
@@ -91,7 +90,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Chuva: --"
-                        android:textColor="@color/background_grey"
+                        android:textColor="#666666"
                         android:textSize="13sp" />
 
                     <TextView
@@ -108,7 +107,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Umidade: --"
-                        android:textColor="@color/background_grey"
+                        android:textColor="#666666"
                         android:textSize="13sp" />
 
                     <TextView
@@ -125,7 +124,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Ventos: --"
-                        android:textColor="@color/background_grey"
+                        android:textColor="#666666"
                         android:textSize="13sp" />
 
                 </LinearLayout>
@@ -134,20 +133,69 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/textViewAlertas"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardAlertas"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="24dp"
-            android:lineSpacingExtra="4dp"
-            android:text="Nenhuma condição extrema detectada."
-            android:textColor="#AAAAAA"
-            android:textSize="14sp"
+            android:visibility="gone"
+            app:cardBackgroundColor="#FFFFFF"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="2dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardClima" />
+            app:layout_constraintTop_toBottomOf="@id/cardClima">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="20dp"
+                android:paddingTop="20dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="20dp">
+
+                <!-- Ícone + Label ALERTA -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/imageViewAlertaIcon"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@android:drawable/ic_dialog_alert"
+                        android:contentDescription="Ícone de alerta" />
+
+                    <TextView
+                        android:id="@+id/textViewAlertaLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ALERTA"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textViewAlertas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="6dp"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonWhatsApp"
@@ -161,12 +209,12 @@
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:visibility="invisible"
-            app:backgroundTint="@color/orange"
+            android:visibility="gone"
+            app:backgroundTint="#4786C4"
             app:cornerRadius="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textViewAlertas" />
+            app:layout_constraintTop_toBottomOf="@id/cardAlertas" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
