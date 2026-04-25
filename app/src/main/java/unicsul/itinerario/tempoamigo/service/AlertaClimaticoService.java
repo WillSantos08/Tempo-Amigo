@@ -11,7 +11,7 @@ import unicsul.itinerario.tempoamigo.model.ClimaHorario;
 public class AlertaClimaticoService {
 
     private static final double TEMPERATURA_CALOR_EXTREMO = 35.0;
-    private static final double TEMPERATURA_FRIO_EXTREMO = 100.0;
+    private static final double TEMPERATURA_FRIO_EXTREMO = 10.0;
     private static final int UMIDADE_ALTA_EXTREMA = 95;
     private static final int UMIDADE_BAIXA_EXTREMA = 20;
     private static final double VENTO_EXTREMO = 60.0;

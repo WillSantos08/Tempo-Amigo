@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         PeriodicWorkRequest trabalho = new PeriodicWorkRequest.Builder(
-                ClimaWorker.class, 15, TimeUnit.MINUTES)
+                ClimaWorker.class, 1, TimeUnit.HOURS)
                 .setConstraints(constraints)
                 .setInputData(inputData)
                 .build();

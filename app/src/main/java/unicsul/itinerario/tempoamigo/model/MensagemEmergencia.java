@@ -26,6 +26,6 @@ public class MensagemEmergencia {
                 .map(Alerta::formatarParaNotificacao)
                 .collect(Collectors.joining("\n"));
 
-        return contato.mensagemInicial + "\n\n" + listaAlertas + "\n\n📍 Minha localização: " + linkMaps();
+        return "Olá " +  contato.nome + "!\n\n" + contato.mensagemInicial + "\n\n" + listaAlertas + "\n\n📍 Minha localização: " + linkMaps();
     }
 }

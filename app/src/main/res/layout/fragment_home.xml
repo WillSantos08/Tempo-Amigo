@@ -69,7 +69,7 @@
                     android:fontFamily="sans-serif-medium"
                     android:text="--°C"
                     android:textColor="#4786C4"
-                    android:textSize="64sp"
+                    android:textSize="48sp"
                     android:textStyle="bold" />
 
                 <View
@@ -106,7 +106,7 @@
                         android:id="@+id/textViewUmidade"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Umidade: --"
+                        android:text="Umid: --"
                         android:textColor="#666666"
                         android:textSize="13sp" />
 

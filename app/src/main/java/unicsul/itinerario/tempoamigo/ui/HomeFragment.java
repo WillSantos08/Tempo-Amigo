@@ -79,7 +79,7 @@ public class HomeFragment extends Fragment {
                     textViewDescricaoClima.setText(ClimaVisualResolver.resolverDescricao(clima));
 
                     textViewTemp.setText(clima.getTemperatura() + "°C");
-                    textViewUmidade.setText("Umidade: " + clima.getUmidade() + "%");
+                    textViewUmidade.setText("Umid: " + clima.getUmidade() + "%");
                     textViewVento.setText("Vento: " + clima.getVelocidadeVento() + " km/h");
                     textViewChuva.setText("Chuva: " + clima.getPrecipitacaoAtual() + " mm");
 
@@ -88,22 +88,24 @@ public class HomeFragment extends Fragment {
                     if (alertas.isEmpty()) {
                         cardAlertas.setVisibility(View.GONE);
                         buttonWhatsApp.setVisibility(View.GONE);
-                    } else {
-                        String textoAlertas = alertas.stream()
-                                .map(Alerta::formatarParaTela)
-                                .collect(Collectors.joining("\n\n"));
-                        textViewAlertas.setText(textoAlertas);
-
-                        int cor = resolverCorSeveridade(alertas);
-                        int corFundo = androidx.core.graphics.ColorUtils.setAlphaComponent(cor, 30);
-                        cardAlertas.setStrokeColor(cor);
-                        cardAlertas.setCardBackgroundColor(corFundo);
-                        labelAlerta.setTextColor(cor);
-                        imageViewAlertaIcon.setColorFilter(cor);
-
-                        cardAlertas.setVisibility(View.VISIBLE);
-                        buttonWhatsApp.setVisibility(View.VISIBLE);
+                        return;
                     }
+
+                    String textoAlertas = alertas.stream()
+                            .map(Alerta::formatarParaTela)
+                            .collect(Collectors.joining("\n\n"));
+                    textViewAlertas.setText(textoAlertas);
+
+                    int cor = resolverCorSeveridade(alertas);
+                    int corFundo = androidx.core.graphics.ColorUtils.setAlphaComponent(cor, 30);
+                    cardAlertas.setStrokeColor(cor);
+                    cardAlertas.setCardBackgroundColor(corFundo);
+                    labelAlerta.setTextColor(cor);
+                    imageViewAlertaIcon.setColorFilter(cor);
+
+                    cardAlertas.setVisibility(View.VISIBLE);
+                    buttonWhatsApp.setVisibility(View.VISIBLE);
+
 
                 }, mainThread::post)
                 .exceptionally(erro -> {
